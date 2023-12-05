@@ -1,4 +1,4 @@
-input_file = "input"
+input_file = "data-d1"
 
 
 def FindEdgeNumber(s: str, inverted: bool) -> str:
@@ -24,9 +24,7 @@ if __name__ == "__main__":
             ln = line.strip()
             if ln == "":
                 continue
-            print(ln)
             combo = GetCombination(ln)
-            print(combo)
             sum += int(combo)
 
     print(sum)
