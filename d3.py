@@ -2,13 +2,20 @@
 input_file = "data-d3"
 
 
-def get_full_num(line: str, col: int) -> tuple[int, int]:
-    idx = col
+def get_full_num(line: str, col: int) -> int:
+    idx = col - 1
+    revNum = ""
+    while idx >= 0 and line[idx].isnumeric():
+        revNum += line[idx]
+        idx -= 1
     num = ""
+    idx = col
+    for i in range(len(revNum), 0, -1):
+        num += revNum[i - 1]
     while idx < len(line) and line[idx].isnumeric():
         num += line[idx]
         idx += 1
-    return int(num), len(num)
+    return int(num)
 
 
 def is_symbol(ch: str):
@@ -16,7 +23,9 @@ def is_symbol(ch: str):
     return not period
 
 
-def check_char(lines: list[str], row: int, col: int) -> bool:
+def check_char(lines: list[str], row: int, col: int) -> int:
+    firstNum = 0
+    secondNum = 0
     for r in [-1, 0, 1]:
         for c in [-1, 0, 1]:
             if r == 0 and c == 0:
@@ -26,12 +35,13 @@ def check_char(lines: list[str], row: int, col: int) -> bool:
             if row + r > len(lines) - 1 or col + c > len(lines[row + r].strip()) - 1:
                 continue
             line = lines[row + r].strip()
-            ch = line[col + c]
-            if ch.isnumeric():
-                continue
-            if is_symbol(ch):
-                return True
-    return False
+            if line[col + c].isnumeric():
+                num = get_full_num(line, col + c)
+                if firstNum == 0:
+                    firstNum = num
+                elif num != firstNum:
+                    secondNum = num
+    return firstNum * secondNum
 
 
 if __name__ == "__main__":
@@ -41,18 +51,8 @@ if __name__ == "__main__":
         sum = 0
         for row, line in enumerate(lines):
             line = line.strip()
-            num_len = 0
             for col, ch in enumerate(line):
-                if num_len > 0:
-                    num_len -= 1
-                    continue
-                if ch.isnumeric():
-                    current_num, num_len = get_full_num(line, col)
-                    has_sumbol = False
-                    for c in range(num_len):
-                        if check_char(lines, row, col + c):
-                            has_sumbol = True
-                            break
-                    if has_sumbol:
-                        sum += current_num
+                if ch == "*":
+                    gear = check_char(lines, row, col)
+                    sum += gear
         print(sum)
